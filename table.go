@@ -12,7 +12,7 @@ import (
 // Records base type of airtable records
 type Records struct {
 	Records []*Record `json:"records"`
-	Offset  int       `offset:"omitempty"`
+	Offset  int       `json:"offset,omitempty"`
 }
 
 // Table represents table object
