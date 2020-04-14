@@ -46,7 +46,7 @@ func (t *Table) GetRecordsWithParams(params url.Values) (*Records, error) {
 	return records, nil
 }
 
-// AddRecords method to lines to table (up to 10 in one request)
+// AddRecords method to add lines to table (up to 10 in one request)
 // https://airtable.com/{yourDatabaseID}/api/docs#curl/table:{yourTableName}:create
 func (t *Table) AddRecords(records *Records) (*Records, error) {
 	result := new(Records)
@@ -61,7 +61,7 @@ func (t *Table) AddRecords(records *Records) (*Records, error) {
 	return result, err
 }
 
-// UpdateRecords full updates records
+// UpdateRecords full update records
 func (t *Table) UpdateRecords(records *Records) (*Records, error) {
 	response := new(Records)
 	err := t.client.post(t.dbName, t.tableName, records, response)

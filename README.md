@@ -20,6 +20,7 @@ Table of contents
     - [Get record by ID](#get-record-by-id)
     - [Update records](#update-records)
     - [Delete record](#delete-record)
+    - [Bulk delete records](#bulk-delete-records)
   - [Special thanks](#special-thanks)
   
 
@@ -133,6 +134,17 @@ if err != nil {
 
 ```Go
 res, err := record.DeleteRecord()
+if err != nil {
+	// Handle error
+}
+```
+
+### Bulk delete records
+
+To delete up to 10 records
+
+```Go
+records, err := table.DeleteRecords([]string{"recordID1", "recordsID2"})
 if err != nil {
 	// Handle error
 }
