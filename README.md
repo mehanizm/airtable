@@ -5,6 +5,7 @@ Golang Airtable API
 ![Go](https://github.com/mehanizm/airtable/workflows/Go/badge.svg)
 [![codecov](https://codecov.io/gh/mehanizm/airtable/branch/master/graph/badge.svg)](https://codecov.io/gh/mehanizm/airtable)
 [![Go Report](https://goreportcard.com/badge/github.com/mehanizm/airtable)](https://goreportcard.com/badge/github.com/mehanizm/airtable)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/avelino/awesome-go)
 
 A simple #golang package to access the [Airtable API](https://airtable.com/api).
 
