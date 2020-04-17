@@ -18,7 +18,7 @@ type HTTPClientError struct {
 }
 
 func (e *HTTPClientError) Error() string {
-	return fmt.Sprintf("status %d: err %v", e.StatusCode, e.Err)
+	return fmt.Sprintf("status %d, err: %v", e.StatusCode, e.Err)
 }
 
 func makeHTTPClientError(url string, resp *http.Response) error {

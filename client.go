@@ -8,6 +8,7 @@ package airtable
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -64,7 +65,7 @@ func (at *Client) get(db, table, recordID string, params url.Values, target inte
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", at.apiKey))
 	req.URL.RawQuery = params.Encode()
-	err = at.do(req, url, target)
+	err = at.do(req, target)
 	if err != nil {
 		return err
 	}
@@ -84,7 +85,7 @@ func (at *Client) post(db, table string, data, response interface{}) error {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", at.apiKey))
-	return at.do(req, url, response)
+	return at.do(req, response)
 }
 
 func (at *Client) delete(db, table string, recordIDs []string, target interface{}) error {
@@ -101,7 +102,7 @@ func (at *Client) delete(db, table string, recordIDs []string, target interface{
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", at.apiKey))
 	req.URL.RawQuery = params.Encode()
-	err = at.do(req, rawURL, target)
+	err = at.do(req, target)
 	if err != nil {
 		return err
 	}
@@ -121,10 +122,14 @@ func (at *Client) patch(db, table, data, response interface{}) error {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", at.apiKey))
-	return at.do(req, url, response)
+	return at.do(req, response)
 }
 
-func (at *Client) do(req *http.Request, url string, response interface{}) error {
+func (at *Client) do(req *http.Request, response interface{}) error {
+	if req == nil {
+		return errors.New("nil request")
+	}
+	url := req.URL.RequestURI()
 	resp, err := at.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("HTTP request failure on %s: %w", url, err)
