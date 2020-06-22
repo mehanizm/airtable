@@ -33,6 +33,12 @@ func (grc *GetRecordsConfig) ReturnFields(fieldNames ...string) *GetRecordsConfi
 	return grc
 }
 
+// SetOffset set records offset to nest request
+func (grc *GetRecordsConfig) SetOffset(offset string) *GetRecordsConfig {
+	grc.params.Add("offset", offset)
+	return grc
+}
+
 // WithFilterFormula add filter to request
 func (grc *GetRecordsConfig) WithFilterFormula(filterFormula string) *GetRecordsConfig {
 	grc.params.Add("filterByFormula", filterFormula)

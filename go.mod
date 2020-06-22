@@ -1,5 +1,3 @@
-module github.com/mehanizm/airtable
+module github.com/andskur/airtable
 
-go 1.13
-
-require gopkg.in/square/go-jose.v2 v2.5.0 // indirect
+go 1.14

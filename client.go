@@ -129,6 +129,7 @@ func (at *Client) do(req *http.Request, response interface{}) error {
 	if req == nil {
 		return errors.New("nil request")
 	}
+
 	url := req.URL.RequestURI()
 	resp, err := at.client.Do(req)
 	if err != nil {
