@@ -35,7 +35,7 @@ func (grc *GetRecordsConfig) ReturnFields(fieldNames ...string) *GetRecordsConfi
 
 // SetOffset set records offset to nest request
 func (grc *GetRecordsConfig) SetOffset(offset string) *GetRecordsConfig {
-	grc.params.Add("offset", offset)
+	grc.params.Set("offset", offset)
 	return grc
 }
 
