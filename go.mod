@@ -1,3 +1,3 @@
-module github.com/andskur/airtable
+module github.com/krismcfarlin/airtable
 
 go 1.14
