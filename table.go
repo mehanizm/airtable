@@ -74,6 +74,18 @@ func (t *Table) UpdateRecords(records *Records) (*Records, error) {
 	}
 	return response, nil
 }
+func (t *Table) UpdatePartialRecords(records *Records) (*Records, error) {
+	response := new(Records)
+	err := t.client.patch(t.dbName, t.tableName, records, response)
+	if err != nil {
+		return nil, err
+	}
+	for _, record := range response.Records {
+		record.client = t.client
+		record.table = t
+	}
+	return response, nil
+}
 
 // DeleteRecords delete records by recordID
 func (t *Table) DeleteRecords(recordIDs []string) (*Records, error) {
