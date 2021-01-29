@@ -68,6 +68,25 @@ func TestTable_UpdateRecords(t *testing.T) {
 	}
 }
 
+func TestTable_UpdateRecordsPartial(t *testing.T) {
+	table := testTable(t)
+	table.client.baseURL = mockResponse("get_records_with_filter.json").URL
+	toSend := new(Records)
+	records, err := table.UpdateRecordsPartial(toSend)
+	if err != nil {
+		t.Error("must be no error")
+	}
+	if len(records.Records) != 3 {
+		t.Errorf("should be 3 records in result, but was: %v", len(records.Records))
+	}
+	table.client.baseURL = mockErrorResponse(404).URL
+	_, err = table.UpdateRecordsPartial(toSend)
+	var e *HTTPClientError
+	if errors.Is(err, e) {
+		t.Errorf("should be an http error, but was not: %v", err)
+	}
+}
+
 func testTable(t *testing.T) *Table {
 	client := testClient(t)
 	return client.GetTable("dbName", "tableName")
