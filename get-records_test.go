@@ -27,11 +27,20 @@ func TestGetRecordsConfig_Do(t *testing.T) {
 		WithSort(sortQuery1, sortQuery2).
 		ReturnFields("Field1", "Field2").
 		InStringFormat("Europe/Moscow", "ru").
+		MaxRecords(100).
+		PageSize(10).
+		WithOffset("hhh").
 		Do()
 	if err != nil {
 		t.Errorf("there should not be an err, but was: %v", err)
 	}
 	if len(records.Records) != 3 {
 		t.Errorf("there should be 3 records, but was %v", len(records.Records))
+	}
+
+	table.client.baseURL = mockErrorResponse(400).URL
+	records, err = table.GetRecords().Do()
+	if err == nil {
+		t.Errorf("there should be an err, but was nil")
 	}
 }
