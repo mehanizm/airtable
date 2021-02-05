@@ -13,6 +13,12 @@ import (
 type Records struct {
 	Records []*Record `json:"records"`
 	Offset  string    `json:"offset,omitempty"`
+
+	// The Airtable API will perform best-effort automatic data conversion
+	// from string values if the typecast parameter is passed in.
+	// Automatic conversion is disabled by default to ensure data integrity,
+	// but it may be helpful for integrating with 3rd party data sources.
+	Typecast bool `json:"typecast,omitempty"`
 }
 
 // Table represents table object
