@@ -93,7 +93,7 @@ func (at *Client) delete(db, table string, recordIDs []string, target interface{
 	rawURL := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 	params := url.Values{}
 	for _, recordID := range recordIDs {
-		params.Set("records[]", recordID)
+		params.Add("records[]", recordID)
 	}
 	req, err := http.NewRequest("DELETE", rawURL, nil)
 	if err != nil {
