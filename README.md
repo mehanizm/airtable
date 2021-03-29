@@ -74,7 +74,7 @@ if err != nil {
 recordsToSend := &airtable.Records{
     Records: []*airtable.Record{
         {
-            Fields: map[string]interface{
+            Fields: map[string]interface{}{
                 "Field1": "value1",
                 "Field2": true,
             },
@@ -113,13 +113,13 @@ To full update records
 toUpdateRecords := &airtable.Records{
     Records: []*airtable.Record{
         {
-            Fields: map[string]interface{
+            Fields: map[string]interface{}{
                 "Field1": "value1",
                 "Field2": true,
             },
         },
         {
-            Fields: map[string]interface{
+            Fields: map[string]interface{}{
                 "Field1": "value1",
                 "Field2": true,
             },
