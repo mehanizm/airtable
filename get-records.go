@@ -29,7 +29,7 @@ func (t *Table) GetRecords() *GetRecordsConfig {
 // ReturnFields set returning field names
 func (grc *GetRecordsConfig) ReturnFields(fieldNames ...string) *GetRecordsConfig {
 	for _, fieldName := range fieldNames {
-		grc.params.Add("fields", fieldName)
+		grc.params.Add("fields[]", fieldName)
 	}
 	return grc
 }
