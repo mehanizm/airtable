@@ -31,7 +31,7 @@ Table of contents
 The Golang Airtable API has been tested compatible with Go 1.13 on up.
 
 ```
-go get github.com/mehanizm/airtable
+go get github.com/yaroslavrudenko/airtable
 ```
 
 ## Basic usage
