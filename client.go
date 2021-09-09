@@ -48,6 +48,25 @@ func (at *Client) SetRateLimit(customRateLimit int) {
 	at.rateLimiter = time.Tick(time.Second / time.Duration(customRateLimit))
 }
 
+func (at *Client) SetBaseURL(baseURL string) error {
+	url, err := url.Parse(baseURL)
+	if err != nil {
+		return fmt.Errorf("failed to parse baseURL: %s", err)
+	}
+
+	if url.Scheme == "" {
+		return fmt.Errorf("scheme of http or https must be specified")
+	}
+
+	if url.Scheme != "https" && url.Scheme != "http" {
+		return fmt.Errorf("http or https baseURL must be used")
+	}
+
+	at.baseURL = url.String()
+
+	return nil
+}
+
 func (at *Client) rateLimit() {
 	<-at.rateLimiter
 }
