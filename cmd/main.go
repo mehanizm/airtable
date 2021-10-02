@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/yaroslavrudenko/airtable"
+	"github.com/mehanizm/airtable"
 )
 
 const (
