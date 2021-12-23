@@ -13,12 +13,12 @@ func TestGetRecordsConfig_Do(t *testing.T) {
 	table := testTable(t)
 	table.client.baseURL = mockResponse("get_records_with_filter.json").URL
 	sortQuery1 := struct {
-		fieldName string
-		direction string
+		FieldName string
+		Direction string
 	}{"Field1", "desc"}
 	sortQuery2 := struct {
-		fieldName string
-		direction string
+		FieldName string
+		Direction string
 	}{"Field2", "asc"}
 
 	records, err := table.GetRecords().
