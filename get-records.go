@@ -42,12 +42,12 @@ func (grc *GetRecordsConfig) WithFilterFormula(filterFormula string) *GetRecords
 
 // WithSort add sorting to request.
 func (grc *GetRecordsConfig) WithSort(sortQueries ...struct {
-	fieldName string
-	direction string
+	FieldName string
+	Direction string
 }) *GetRecordsConfig {
 	for queryNum, sortQuery := range sortQueries {
-		grc.params.Set(fmt.Sprintf("sort[%v][field]", queryNum), sortQuery.fieldName)
-		grc.params.Set(fmt.Sprintf("sort[%v][direction]", queryNum), sortQuery.direction)
+		grc.params.Set(fmt.Sprintf("sort[%v][field]", queryNum), sortQuery.FieldName)
+		grc.params.Set(fmt.Sprintf("sort[%v][direction]", queryNum), sortQuery.Direction)
 	}
 	return grc
 }
