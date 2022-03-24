@@ -23,7 +23,10 @@ func mockResponse(paths ...string) *httptest.Server {
 	}
 
 	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Write(mockData)
+		_, err := rw.Write(mockData)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}))
 }
 

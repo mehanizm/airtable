@@ -39,7 +39,7 @@ func TestGetRecordsConfig_Do(t *testing.T) {
 	}
 
 	table.client.baseURL = mockErrorResponse(400).URL
-	records, err = table.GetRecords().Do()
+	_, err = table.GetRecords().Do()
 	if err == nil {
 		t.Errorf("there should be an err, but was nil")
 	}
