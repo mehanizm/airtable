@@ -1,3 +1,8 @@
+// Copyright © 2020 Mike Berezin
+//
+// Use of this source code is governed by an MIT license.
+// Details in the LICENSE file.
+
 package airtable
 
 import (
