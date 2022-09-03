@@ -72,6 +72,32 @@ func (at *Client) rateLimit() {
 	<-at.rateLimiter
 }
 
+// Base type of airtable base.
+type Base struct {
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	PermissionLevel string `json:"permissionLevel"`
+}
+
+// Base type of airtable bases.
+type Bases struct {
+	Bases  []*Base `json:"bases"`
+	Offset string  `json:"offset,omitempty"`
+}
+
+// GetBasesWithParams get bases with url values params
+// https://airtable.com/api/meta
+func (at *Client) GetBasesWithParams(params url.Values) (*Bases, error) {
+	bases := new(Bases)
+
+	err := at.get("meta", "bases", "", params, bases)
+	if err != nil {
+		return nil, err
+	}
+
+	return bases, nil
+}
+
 func (at *Client) get(db, table, recordID string, params url.Values, target interface{}) error {
 	at.rateLimit()
 
