@@ -63,7 +63,7 @@ type BaseConfig struct {
 }
 
 // GetBase return Base object.
-func (c *Client) GetBase(dbId string) *BaseConfig {
+func (c *Client) GetBaseSchema(dbId string) *BaseConfig {
 	return &BaseConfig{
 		client: c,
 		dbId:   dbId,
