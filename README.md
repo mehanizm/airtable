@@ -43,6 +43,18 @@ You should get `your_api_token` in the airtable [account page](https://airtable.
 client := airtable.NewClient("your_api_token")
 ```
 
+### List bases
+
+```Go
+bases, err := client.GetBases().WithOffset("").Do()
+```
+
+### Get base schema
+
+```Go
+schema, err := client.GetBaseSchema("your_database_ID").Do()
+```
+
 ### Get table
 
 To get the `your_database_ID` you should go to [main API page](https://airtable.com/api) and select the database.
