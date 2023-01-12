@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -40,6 +40,11 @@ func NewClient(apiKey string) *Client {
 		apiKey:      apiKey,
 		baseURL:     airtableBaseURL,
 	}
+}
+
+// Set custom http client for custom usage
+func (at *Client) SetCustomClient(client *http.Client) {
+	at.client = client
 }
 
 // SetRateLimit rate limit setter for custom usage
@@ -72,7 +77,7 @@ func (at *Client) rateLimit() {
 	<-at.rateLimiter
 }
 
-func (at *Client) get(db, table, recordID string, params url.Values, target interface{}) error {
+func (at *Client) get(ctx context.Context, db, table, recordID string, params url.Values, target interface{}) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -80,7 +85,7 @@ func (at *Client) get(db, table, recordID string, params url.Values, target inte
 		url += fmt.Sprintf("/%s", recordID)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return fmt.Errorf("cannot create request: %w", err)
 	}
@@ -98,7 +103,7 @@ func (at *Client) get(db, table, recordID string, params url.Values, target inte
 	return nil
 }
 
-func (at *Client) post(db, table string, data, response interface{}) error {
+func (at *Client) post(ctx context.Context, db, table string, data, response interface{}) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -108,7 +113,7 @@ func (at *Client) post(db, table string, data, response interface{}) error {
 		return fmt.Errorf("cannot marshal body: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), "POST", url, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("cannot create request: %w", err)
 	}
@@ -119,7 +124,7 @@ func (at *Client) post(db, table string, data, response interface{}) error {
 	return at.do(req, response)
 }
 
-func (at *Client) delete(db, table string, recordIDs []string, target interface{}) error {
+func (at *Client) delete(ctx context.Context, db, table string, recordIDs []string, target interface{}) error {
 	at.rateLimit()
 
 	rawURL := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -129,7 +134,7 @@ func (at *Client) delete(db, table string, recordIDs []string, target interface{
 		params.Add("records[]", recordID)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), "DELETE", rawURL, nil)
+	req, err := http.NewRequestWithContext(ctx, "DELETE", rawURL, nil)
 	if err != nil {
 		return fmt.Errorf("cannot create request: %w", err)
 	}
@@ -147,7 +152,7 @@ func (at *Client) delete(db, table string, recordIDs []string, target interface{
 	return nil
 }
 
-func (at *Client) patch(db, table, data, response interface{}) error {
+func (at *Client) patch(ctx context.Context, db, table, data, response interface{}) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -157,7 +162,7 @@ func (at *Client) patch(db, table, data, response interface{}) error {
 		return fmt.Errorf("cannot marshal body: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), "PATCH", url, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, "PATCH", url, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("cannot create request: %w", err)
 	}
@@ -168,7 +173,7 @@ func (at *Client) patch(db, table, data, response interface{}) error {
 	return at.do(req, response)
 }
 
-func (at *Client) put(db, table, data, response interface{}) error {
+func (at *Client) put(ctx context.Context, db, table, data, response interface{}) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -178,7 +183,7 @@ func (at *Client) put(db, table, data, response interface{}) error {
 		return fmt.Errorf("cannot marshal body: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), "PUT", url, bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, "PUT", url, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("cannot create request: %w", err)
 	}
@@ -207,7 +212,7 @@ func (at *Client) do(req *http.Request, response interface{}) error {
 		return makeHTTPClientError(url, resp)
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("HTTP Read error on response for %s: %w", url, err)
 	}

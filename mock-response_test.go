@@ -6,10 +6,10 @@
 package airtable
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 )
 
@@ -17,7 +17,7 @@ func mockResponse(paths ...string) *httptest.Server {
 	parts := []string{".", "testdata"}
 	filename := filepath.Join(append(parts, paths...)...)
 
-	mockData, err := ioutil.ReadFile(filename)
+	mockData, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}

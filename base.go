@@ -1,6 +1,7 @@
 package airtable
 
 import (
+	"context"
 	"net/url"
 )
 
@@ -23,6 +24,7 @@ type Field struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
 type View struct {
 	ID   string `json:"id"`
 	Type string `json:"type"`
@@ -45,9 +47,15 @@ type Tables struct {
 // GetBasesWithParams get bases with url values params
 // https://airtable.com/developers/web/api/list-bases
 func (at *Client) GetBasesWithParams(params url.Values) (*Bases, error) {
+	return at.GetBasesWithParamsContext(context.Background(), params)
+}
+
+// getBasesWithParamsContext get bases with url values params
+// with custom context
+func (at *Client) GetBasesWithParamsContext(ctx context.Context, params url.Values) (*Bases, error) {
 	bases := new(Bases)
 
-	err := at.get("meta", "bases", "", params, bases)
+	err := at.get(ctx, "meta", "bases", "", params, bases)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +67,6 @@ func (at *Client) GetBasesWithParams(params url.Values) (*Bases, error) {
 type BaseConfig struct {
 	client *Client
 	dbId   string
-	params url.Values
 }
 
 // GetBase return Base object.
@@ -72,15 +79,26 @@ func (c *Client) GetBaseSchema(dbId string) *BaseConfig {
 
 // Do send the prepared
 func (b *BaseConfig) Do() (*Tables, error) {
-	return b.GetTablesWithParams()
+	return b.GetTables()
 }
 
-// GetTablesWithParams get tables from a base with url values params
+// Do send the prepared with custom context
+func (b *BaseConfig) DoContext(ctx context.Context) (*Tables, error) {
+	return b.GetTablesContext(ctx)
+}
+
+// GetTables get tables from a base with url values params
 // https://airtable.com/developers/web/api/get-base-schema
-func (b *BaseConfig) GetTablesWithParams() (*Tables, error) {
+func (b *BaseConfig) GetTables() (*Tables, error) {
+	return b.GetTablesContext(context.Background())
+}
+
+// getTablesContext get tables from a base with url values params
+// with custom context
+func (b *BaseConfig) GetTablesContext(ctx context.Context) (*Tables, error) {
 	tables := new(Tables)
 
-	err := b.client.get("meta/bases", b.dbId, "tables", nil, tables)
+	err := b.client.get(ctx, "meta/bases", b.dbId, "tables", nil, tables)
 	if err != nil {
 		return nil, err
 	}

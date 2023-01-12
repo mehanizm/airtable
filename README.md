@@ -43,6 +43,14 @@ You should get `your_api_token` in the airtable [account page](https://airtable.
 client := airtable.NewClient("your_api_token")
 ```
 
+You can use custom http client here
+```Go
+client.SetCustomClient(http.DefaultClient)
+```
+
+### Custom context
+Each method below can be used with custom context. Simply use `MethodNameContext` call and provide context as first argument.
+
 ### List bases
 
 ```Go

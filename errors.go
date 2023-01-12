@@ -7,7 +7,7 @@ package airtable
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -48,7 +48,7 @@ func makeHTTPClientError(url string, resp *http.Response) error {
 		respStatusText = "The server could not process your request in time. The server could be temporarily unavailable, or it could have timed out processing your request. You should retry the request with backoffs."
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		resError = fmt.Errorf("HTTP request failure on %s:\n%d %s\n%s\n\nCannot parse body with err: %w",
 			url, resp.StatusCode, resp.Status, respStatusText, err)

@@ -5,7 +5,10 @@
 
 package airtable
 
-import "net/url"
+import (
+	"context"
+	"net/url"
+)
 
 // Record base time of airtable record fields.
 type Record struct {
@@ -26,9 +29,15 @@ type Record struct {
 // GetRecord get record from table
 // https://airtable.com/{yourDatabaseID}/api/docs#curl/table:{yourTableName}:retrieve
 func (t *Table) GetRecord(recordID string) (*Record, error) {
+	return t.GetRecordContext(context.Background(), recordID)
+}
+
+// GetRecordContext get record from table
+// with custom context
+func (t *Table) GetRecordContext(ctx context.Context, recordID string) (*Record, error) {
 	result := new(Record)
 
-	err := t.client.get(t.dbName, t.tableName, recordID, url.Values{}, result)
+	err := t.client.get(ctx, t.dbName, t.tableName, recordID, url.Values{}, result)
 	if err != nil {
 		return nil, err
 	}
@@ -41,6 +50,12 @@ func (t *Table) GetRecord(recordID string) (*Record, error) {
 
 // UpdateRecordPartial updates partial info on record.
 func (r *Record) UpdateRecordPartial(changedFields map[string]interface{}) (*Record, error) {
+	return r.UpdateRecordPartialContext(context.Background(), changedFields)
+}
+
+// UpdateRecordPartialContext updates partial info on record
+// with custom context
+func (r *Record) UpdateRecordPartialContext(ctx context.Context, changedFields map[string]interface{}) (*Record, error) {
 	data := &Records{
 		Records: []*Record{
 			{
@@ -51,7 +66,7 @@ func (r *Record) UpdateRecordPartial(changedFields map[string]interface{}) (*Rec
 	}
 	response := new(Records)
 
-	err := r.client.patch(r.table.dbName, r.table.tableName, data, response)
+	err := r.client.patch(ctx, r.table.dbName, r.table.tableName, data, response)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +81,15 @@ func (r *Record) UpdateRecordPartial(changedFields map[string]interface{}) (*Rec
 
 // DeleteRecord delete one record.
 func (r *Record) DeleteRecord() (*Record, error) {
+	return r.DeleteRecordContext(context.Background())
+}
+
+// DeleteRecordContext delete one record
+// with custom context
+func (r *Record) DeleteRecordContext(ctx context.Context) (*Record, error) {
 	response := new(Records)
 
-	err := r.client.delete(r.table.dbName, r.table.tableName, []string{r.ID}, response)
+	err := r.client.delete(ctx, r.table.dbName, r.table.tableName, []string{r.ID}, response)
 	if err != nil {
 		return nil, err
 	}

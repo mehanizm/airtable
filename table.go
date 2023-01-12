@@ -6,6 +6,7 @@
 package airtable
 
 import (
+	"context"
 	"net/url"
 )
 
@@ -40,9 +41,15 @@ func (c *Client) GetTable(dbName, tableName string) *Table {
 // GetRecordsWithParams get records with url values params
 // https://airtable.com/{yourDatabaseID}/api/docs#curl/table:{yourTableName}:list
 func (t *Table) GetRecordsWithParams(params url.Values) (*Records, error) {
+	return t.GetRecordsWithParamsContext(context.Background(), params)
+}
+
+// GetRecordsWithParamsContext get records with url values params
+// with custom context
+func (t *Table) GetRecordsWithParamsContext(ctx context.Context, params url.Values) (*Records, error) {
 	records := new(Records)
 
-	err := t.client.get(t.dbName, t.tableName, "", params, records)
+	err := t.client.get(ctx, t.dbName, t.tableName, "", params, records)
 	if err != nil {
 		return nil, err
 	}
@@ -58,9 +65,15 @@ func (t *Table) GetRecordsWithParams(params url.Values) (*Records, error) {
 // AddRecords method to add lines to table (up to 10 in one request)
 // https://airtable.com/{yourDatabaseID}/api/docs#curl/table:{yourTableName}:create
 func (t *Table) AddRecords(records *Records) (*Records, error) {
+	return t.AddRecordsContext(context.Background(), records)
+}
+
+// AddRecordsContext method to add lines to table (up to 10 in one request)
+// with custom context
+func (t *Table) AddRecordsContext(ctx context.Context, records *Records) (*Records, error) {
 	result := new(Records)
 
-	err := t.client.post(t.dbName, t.tableName, records, result)
+	err := t.client.post(ctx, t.dbName, t.tableName, records, result)
 	if err != nil {
 		return nil, err
 	}
@@ -75,9 +88,14 @@ func (t *Table) AddRecords(records *Records) (*Records, error) {
 
 // UpdateRecords full update records.
 func (t *Table) UpdateRecords(records *Records) (*Records, error) {
+	return t.UpdateRecordsContext(context.Background(), records)
+}
+
+// UpdateRecordsContext full update records with custom context.
+func (t *Table) UpdateRecordsContext(ctx context.Context, records *Records) (*Records, error) {
 	response := new(Records)
 
-	err := t.client.put(t.dbName, t.tableName, records, response)
+	err := t.client.put(ctx, t.dbName, t.tableName, records, response)
 	if err != nil {
 		return nil, err
 	}
@@ -92,9 +110,14 @@ func (t *Table) UpdateRecords(records *Records) (*Records, error) {
 
 // UpdateRecordsPartial partial update records.
 func (t *Table) UpdateRecordsPartial(records *Records) (*Records, error) {
+	return t.UpdateRecordsPartialContext(context.Background(), records)
+}
+
+// UpdateRecordsPartialContext partial update records with custom context.
+func (t *Table) UpdateRecordsPartialContext(ctx context.Context, records *Records) (*Records, error) {
 	response := new(Records)
 
-	err := t.client.patch(t.dbName, t.tableName, records, response)
+	err := t.client.patch(ctx, t.dbName, t.tableName, records, response)
 	if err != nil {
 		return nil, err
 	}
@@ -110,9 +133,15 @@ func (t *Table) UpdateRecordsPartial(records *Records) (*Records, error) {
 // DeleteRecords delete records by recordID
 // up to 10 ids in one request.
 func (t *Table) DeleteRecords(recordIDs []string) (*Records, error) {
+	return t.DeleteRecordsContext(context.Background(), recordIDs)
+}
+
+// DeleteRecordsContext delete records by recordID
+// with custom context
+func (t *Table) DeleteRecordsContext(ctx context.Context, recordIDs []string) (*Records, error) {
 	response := new(Records)
 
-	err := t.client.delete(t.dbName, t.tableName, recordIDs, response)
+	err := t.client.delete(ctx, t.dbName, t.tableName, recordIDs, response)
 	if err != nil {
 		return nil, err
 	}
