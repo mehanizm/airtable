@@ -14,13 +14,13 @@ import (
 func TestToDateTime(t *testing.T) {
 	tests := []struct {
 		name    string
-		field   interface{}
+		field   any
 		want    time.Time
 		wantErr bool
 	}{
-		{"not string", interface{}(1), time.Time{}, true},
-		{"string not time", interface{}("hello"), time.Time{}, true},
-		{"string time", interface{}("2022-03-24T11:12:13.000Z"), time.Date(2022, 0o3, 24, 11, 12, 13, 0, time.UTC), false},
+		{"not string", any(1), time.Time{}, true},
+		{"string not time", any("hello"), time.Time{}, true},
+		{"string time", any("2022-03-24T11:12:13.000Z"), time.Date(2022, 0o3, 24, 11, 12, 13, 0, time.UTC), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -40,9 +40,9 @@ func TestFromDateTime(t *testing.T) {
 	tests := []struct {
 		name string
 		t    time.Time
-		want interface{}
+		want any
 	}{
-		{"positive", time.Date(2022, 0o3, 24, 11, 12, 13, 1, time.UTC), interface{}("2022-03-24T11:12:13.000Z")},
+		{"positive", time.Date(2022, 0o3, 24, 11, 12, 13, 1, time.UTC), any("2022-03-24T11:12:13.000Z")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -94,7 +94,7 @@ if err != nil {
 recordsToSend := &airtable.Records{
     Records: []*airtable.Record{
         {
-            Fields: map[string]interface{}{
+            Fields: map[string]any{
                 "Field1": "value1",
                 "Field2": true,
             },
@@ -121,7 +121,7 @@ if err != nil {
 To partial update one record
 
 ```Go
-res, err := record.UpdateRecordPartial(map[string]interface{}{"Field_2": false})
+res, err := record.UpdateRecordPartial(map[string]any{"Field_2": false})
 if err != nil {
 	// Handle error
 }
@@ -133,13 +133,13 @@ To full update records
 toUpdateRecords := &airtable.Records{
     Records: []*airtable.Record{
         {
-            Fields: map[string]interface{}{
+            Fields: map[string]any{
                 "Field1": "value1",
                 "Field2": true,
             },
         },
         {
-            Fields: map[string]interface{}{
+            Fields: map[string]any{
                 "Field1": "value1",
                 "Field2": true,
             },

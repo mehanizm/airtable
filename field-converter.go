@@ -16,7 +16,7 @@ const (
 
 var ErrNotDateTime = errors.New("field is not date time")
 
-func ToDateTime(field interface{}) (time.Time, error) {
+func ToDateTime(field any) (time.Time, error) {
 	fS, err := field.(string)
 	if !err {
 		return time.Time{}, ErrNotDateTime
@@ -24,6 +24,6 @@ func ToDateTime(field interface{}) (time.Time, error) {
 	return time.Parse(dateTimeFormat, fS)
 }
 
-func FromDateTime(t time.Time) interface{} {
+func FromDateTime(t time.Time) any {
 	return t.Format(dateTimeFormat)
 }

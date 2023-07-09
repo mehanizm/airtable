@@ -14,10 +14,10 @@ import (
 type Record struct {
 	client      *Client
 	table       *Table
-	ID          string                 `json:"id,omitempty"`
-	Fields      map[string]interface{} `json:"fields"`
-	CreatedTime string                 `json:"createdTime,omitempty"`
-	Deleted     bool                   `json:"deleted,omitempty"`
+	ID          string         `json:"id,omitempty"`
+	Fields      map[string]any `json:"fields"`
+	CreatedTime string         `json:"createdTime,omitempty"`
+	Deleted     bool           `json:"deleted,omitempty"`
 
 	// The Airtable API will perform best-effort automatic data conversion
 	// from string values if the typecast parameter is passed in.
@@ -49,13 +49,13 @@ func (t *Table) GetRecordContext(ctx context.Context, recordID string) (*Record,
 }
 
 // UpdateRecordPartial updates partial info on record.
-func (r *Record) UpdateRecordPartial(changedFields map[string]interface{}) (*Record, error) {
+func (r *Record) UpdateRecordPartial(changedFields map[string]any) (*Record, error) {
 	return r.UpdateRecordPartialContext(context.Background(), changedFields)
 }
 
 // UpdateRecordPartialContext updates partial info on record
 // with custom context
-func (r *Record) UpdateRecordPartialContext(ctx context.Context, changedFields map[string]interface{}) (*Record, error) {
+func (r *Record) UpdateRecordPartialContext(ctx context.Context, changedFields map[string]any) (*Record, error) {
 	data := &Records{
 		Records: []*Record{
 			{

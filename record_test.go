@@ -23,7 +23,7 @@ func TestRecord_GetRecord(t *testing.T) {
 		table:       table,
 		ID:          "recnTq6CsvFM6vX2m",
 		CreatedTime: "2020-04-10T11:30:57.000Z",
-		Fields: map[string]interface{}{
+		Fields: map[string]any{
 			"Field1": "Field1",
 			"Field2": true,
 			"Field3": "2020-04-06T06:00:00.000Z",
@@ -61,7 +61,7 @@ func TestRecord_DeleteRecord(t *testing.T) {
 func TestRecord_UpdateRecordPartial(t *testing.T) {
 	record := testRecord(t)
 	record.client.baseURL = mockResponse("get_records_with_filter.json").URL
-	res, err := record.UpdateRecordPartial(map[string]interface{}{"Field_2": true})
+	res, err := record.UpdateRecordPartial(map[string]any{"Field_2": true})
 	if err != nil {
 		t.Error("must be no error")
 	}
@@ -73,7 +73,7 @@ func TestRecord_UpdateRecordPartial(t *testing.T) {
 		t.Errorf("expected that Field_2 will be true, but was: %#v", res.Fields["Field2"].(bool))
 	}
 	record.client.baseURL = mockErrorResponse(404).URL
-	_, err = record.UpdateRecordPartial(map[string]interface{}{})
+	_, err = record.UpdateRecordPartial(map[string]any{})
 	var e *HTTPClientError
 	if errors.Is(err, e) {
 		t.Errorf("should be an http error, but was not: %v", err)

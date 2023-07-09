@@ -77,7 +77,7 @@ func (at *Client) rateLimit() {
 	<-at.rateLimiter
 }
 
-func (at *Client) get(ctx context.Context, db, table, recordID string, params url.Values, target interface{}) error {
+func (at *Client) get(ctx context.Context, db, table, recordID string, params url.Values, target any) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -103,7 +103,7 @@ func (at *Client) get(ctx context.Context, db, table, recordID string, params ur
 	return nil
 }
 
-func (at *Client) post(ctx context.Context, db, table string, data, response interface{}) error {
+func (at *Client) post(ctx context.Context, db, table string, data, response any) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -124,7 +124,7 @@ func (at *Client) post(ctx context.Context, db, table string, data, response int
 	return at.do(req, response)
 }
 
-func (at *Client) delete(ctx context.Context, db, table string, recordIDs []string, target interface{}) error {
+func (at *Client) delete(ctx context.Context, db, table string, recordIDs []string, target any) error {
 	at.rateLimit()
 
 	rawURL := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -152,7 +152,7 @@ func (at *Client) delete(ctx context.Context, db, table string, recordIDs []stri
 	return nil
 }
 
-func (at *Client) patch(ctx context.Context, db, table, data, response interface{}) error {
+func (at *Client) patch(ctx context.Context, db, table, data, response any) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -173,7 +173,7 @@ func (at *Client) patch(ctx context.Context, db, table, data, response interface
 	return at.do(req, response)
 }
 
-func (at *Client) put(ctx context.Context, db, table, data, response interface{}) error {
+func (at *Client) put(ctx context.Context, db, table, data, response any) error {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -194,7 +194,7 @@ func (at *Client) put(ctx context.Context, db, table, data, response interface{}
 	return at.do(req, response)
 }
 
-func (at *Client) do(req *http.Request, response interface{}) error {
+func (at *Client) do(req *http.Request, response any) error {
 	if req == nil {
 		return errors.New("nil request")
 	}

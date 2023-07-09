@@ -19,11 +19,11 @@ type Bases struct {
 }
 
 type Field struct {
-	ID          string `json:"id"`
-	Type        string `json:"type"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Options     map[string]interface{} `json:"options"`
+	ID          string         `json:"id"`
+	Type        string         `json:"type"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Options     map[string]any `json:"options"`
 }
 
 type View struct {
