@@ -23,6 +23,7 @@ type Field struct {
 	Type        string `json:"type"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Options     map[string]interface{} `json:"options"`
 }
 
 type View struct {
