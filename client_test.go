@@ -26,12 +26,12 @@ func TestClient_do(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = c.do(req, nil)
+	_, err = c.do(req, nil)
 	var e *HTTPClientError
 	if errors.Is(err, e) {
 		t.Errorf("should be an http error, but was not: %v", err)
 	}
-	err = c.do(nil, nil)
+	_, err = c.do(nil, nil)
 	if err == nil {
 		t.Errorf("there should be an error, but was nil")
 	}

@@ -37,11 +37,10 @@ func (t *Table) GetRecord(recordID string) (*Record, error) {
 func (t *Table) GetRecordContext(ctx context.Context, recordID string) (*Record, error) {
 	result := new(Record)
 
-	err := t.client.get(ctx, t.dbName, t.tableName, recordID, url.Values{}, result)
+	_, err := t.client.get(ctx, t.dbName, t.tableName, recordID, url.Values{}, result)
 	if err != nil {
 		return nil, err
 	}
-
 	result.client = t.client
 	result.table = t
 
@@ -66,13 +65,12 @@ func (r *Record) UpdateRecordPartialContext(ctx context.Context, changedFields m
 	}
 	response := new(Records)
 
-	err := r.client.patch(ctx, r.table.dbName, r.table.tableName, data, response)
+	_, err := r.client.patch(ctx, r.table.dbName, r.table.tableName, data, response)
 	if err != nil {
 		return nil, err
 	}
 
 	result := response.Records[0]
-
 	result.client = r.client
 	result.table = r.table
 
@@ -89,7 +87,7 @@ func (r *Record) DeleteRecord() (*Record, error) {
 func (r *Record) DeleteRecordContext(ctx context.Context) (*Record, error) {
 	response := new(Records)
 
-	err := r.client.delete(ctx, r.table.dbName, r.table.tableName, []string{r.ID}, response)
+	_, err := r.client.delete(ctx, r.table.dbName, r.table.tableName, []string{r.ID}, response)
 	if err != nil {
 		return nil, err
 	}

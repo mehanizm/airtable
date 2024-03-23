@@ -1,3 +1,3 @@
-module github.com/mehanizm/airtable
+module github.com/tkellen/airtable
 
 go 1.20

@@ -56,7 +56,7 @@ func (at *Client) GetBasesWithParams(params url.Values) (*Bases, error) {
 func (at *Client) GetBasesWithParamsContext(ctx context.Context, params url.Values) (*Bases, error) {
 	bases := new(Bases)
 
-	err := at.get(ctx, "meta", "bases", "", params, bases)
+	_, err := at.get(ctx, "meta", "bases", "", params, bases)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (b *BaseConfig) GetTables() (*Tables, error) {
 func (b *BaseConfig) GetTablesContext(ctx context.Context) (*Tables, error) {
 	tables := new(Tables)
 
-	err := b.client.get(ctx, "meta/bases", b.dbId, "tables", nil, tables)
+	_, err := b.client.get(ctx, "meta/bases", b.dbId, "tables", nil, tables)
 	if err != nil {
 		return nil, err
 	}

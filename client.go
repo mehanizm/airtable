@@ -77,7 +77,7 @@ func (at *Client) rateLimit() {
 	<-at.rateLimiter
 }
 
-func (at *Client) get(ctx context.Context, db, table, recordID string, params url.Values, target any) error {
+func (at *Client) get(ctx context.Context, db, table, recordID string, params url.Values, target any) ([]byte, error) {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -87,7 +87,7 @@ func (at *Client) get(ctx context.Context, db, table, recordID string, params ur
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
-		return fmt.Errorf("cannot create request: %w", err)
+		return nil, fmt.Errorf("cannot create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -95,27 +95,22 @@ func (at *Client) get(ctx context.Context, db, table, recordID string, params ur
 
 	req.URL.RawQuery = params.Encode()
 
-	err = at.do(req, target)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return at.do(req, target)
 }
 
-func (at *Client) post(ctx context.Context, db, table string, data, response any) error {
+func (at *Client) post(ctx context.Context, db, table string, data, response any) ([]byte, error) {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 
 	body, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("cannot marshal body: %w", err)
+		return nil, fmt.Errorf("cannot marshal body: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(body))
 	if err != nil {
-		return fmt.Errorf("cannot create request: %w", err)
+		return nil, fmt.Errorf("cannot create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -124,7 +119,7 @@ func (at *Client) post(ctx context.Context, db, table string, data, response any
 	return at.do(req, response)
 }
 
-func (at *Client) delete(ctx context.Context, db, table string, recordIDs []string, target any) error {
+func (at *Client) delete(ctx context.Context, db, table string, recordIDs []string, target any) ([]byte, error) {
 	at.rateLimit()
 
 	rawURL := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
@@ -136,7 +131,7 @@ func (at *Client) delete(ctx context.Context, db, table string, recordIDs []stri
 
 	req, err := http.NewRequestWithContext(ctx, "DELETE", rawURL, nil)
 	if err != nil {
-		return fmt.Errorf("cannot create request: %w", err)
+		return nil, fmt.Errorf("cannot create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -144,27 +139,22 @@ func (at *Client) delete(ctx context.Context, db, table string, recordIDs []stri
 
 	req.URL.RawQuery = params.Encode()
 
-	err = at.do(req, target)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return at.do(req, target)
 }
 
-func (at *Client) patch(ctx context.Context, db, table, data, response any) error {
+func (at *Client) patch(ctx context.Context, db, table, data, response any) ([]byte, error) {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 
 	body, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("cannot marshal body: %w", err)
+		return nil, fmt.Errorf("cannot marshal body: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "PATCH", url, bytes.NewReader(body))
 	if err != nil {
-		return fmt.Errorf("cannot create request: %w", err)
+		return nil, fmt.Errorf("cannot create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -173,19 +163,19 @@ func (at *Client) patch(ctx context.Context, db, table, data, response any) erro
 	return at.do(req, response)
 }
 
-func (at *Client) put(ctx context.Context, db, table, data, response any) error {
+func (at *Client) put(ctx context.Context, db, table, data, response any) ([]byte, error) {
 	at.rateLimit()
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 
 	body, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("cannot marshal body: %w", err)
+		return nil, fmt.Errorf("cannot marshal body: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "PUT", url, bytes.NewReader(body))
 	if err != nil {
-		return fmt.Errorf("cannot create request: %w", err)
+		return nil, fmt.Errorf("cannot create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -194,33 +184,33 @@ func (at *Client) put(ctx context.Context, db, table, data, response any) error 
 	return at.do(req, response)
 }
 
-func (at *Client) do(req *http.Request, response any) error {
+func (at *Client) do(req *http.Request, response any) ([]byte, error) {
 	if req == nil {
-		return errors.New("nil request")
+		return nil, errors.New("nil request")
 	}
 
 	url := req.URL.RequestURI()
 
 	resp, err := at.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("HTTP request failure on %s: %w", url, err)
+		return nil, fmt.Errorf("HTTP request failure on %s: %w", url, err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return makeHTTPClientError(url, resp)
+		return nil, makeHTTPClientError(url, resp)
 	}
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("HTTP Read error on response for %s: %w", url, err)
+		return nil, fmt.Errorf("HTTP Read error on response for %s: %w", url, err)
 	}
 
 	err = json.Unmarshal(b, response)
 	if err != nil {
-		return fmt.Errorf("JSON decode failed on %s:\n%s\nerror: %w", url, string(b), err)
+		return nil, fmt.Errorf("JSON decode failed on %s:\n%s\nerror: %w", url, string(b), err)
 	}
 
-	return nil
+	return b, nil
 }

@@ -12,8 +12,9 @@ import (
 
 // Records base type of airtable records.
 type Records struct {
-	Records []*Record `json:"records"`
-	Offset  string    `json:"offset,omitempty"`
+	Records     []*Record `json:"records"`
+	ResponseRaw []byte
+	Offset      string `json:"offset,omitempty"`
 
 	// The Airtable API will perform best-effort automatic data conversion
 	// from string values if the typecast parameter is passed in.
@@ -49,10 +50,11 @@ func (t *Table) GetRecordsWithParams(params url.Values) (*Records, error) {
 func (t *Table) GetRecordsWithParamsContext(ctx context.Context, params url.Values) (*Records, error) {
 	records := new(Records)
 
-	err := t.client.get(ctx, t.dbName, t.tableName, "", params, records)
+	raw, err := t.client.get(ctx, t.dbName, t.tableName, "", params, records)
 	if err != nil {
 		return nil, err
 	}
+	records.ResponseRaw = raw
 
 	for _, record := range records.Records {
 		record.client = t.client
@@ -73,10 +75,11 @@ func (t *Table) AddRecords(records *Records) (*Records, error) {
 func (t *Table) AddRecordsContext(ctx context.Context, records *Records) (*Records, error) {
 	result := new(Records)
 
-	err := t.client.post(ctx, t.dbName, t.tableName, records, result)
+	raw, err := t.client.post(ctx, t.dbName, t.tableName, records, result)
 	if err != nil {
 		return nil, err
 	}
+	result.ResponseRaw = raw
 
 	for _, record := range result.Records {
 		record.client = t.client
@@ -95,10 +98,11 @@ func (t *Table) UpdateRecords(records *Records) (*Records, error) {
 func (t *Table) UpdateRecordsContext(ctx context.Context, records *Records) (*Records, error) {
 	response := new(Records)
 
-	err := t.client.put(ctx, t.dbName, t.tableName, records, response)
+	raw, err := t.client.put(ctx, t.dbName, t.tableName, records, response)
 	if err != nil {
 		return nil, err
 	}
+	response.ResponseRaw = raw
 
 	for _, record := range response.Records {
 		record.client = t.client
@@ -117,10 +121,11 @@ func (t *Table) UpdateRecordsPartial(records *Records) (*Records, error) {
 func (t *Table) UpdateRecordsPartialContext(ctx context.Context, records *Records) (*Records, error) {
 	response := new(Records)
 
-	err := t.client.patch(ctx, t.dbName, t.tableName, records, response)
+	raw, err := t.client.patch(ctx, t.dbName, t.tableName, records, response)
 	if err != nil {
 		return nil, err
 	}
+	response.ResponseRaw = raw
 
 	for _, record := range response.Records {
 		record.client = t.client
@@ -141,10 +146,11 @@ func (t *Table) DeleteRecords(recordIDs []string) (*Records, error) {
 func (t *Table) DeleteRecordsContext(ctx context.Context, recordIDs []string) (*Records, error) {
 	response := new(Records)
 
-	err := t.client.delete(ctx, t.dbName, t.tableName, recordIDs, response)
+	raw, err := t.client.delete(ctx, t.dbName, t.tableName, recordIDs, response)
 	if err != nil {
 		return nil, err
 	}
+	response.ResponseRaw = raw
 
 	for _, record := range response.Records {
 		record.client = t.client
