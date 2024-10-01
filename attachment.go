@@ -31,7 +31,10 @@ type FieldAttachmentDetails struct {
 	Type string `json:"type"`
 }
 
-func (t *Table) UploadAttachment(ctx context.Context, recordID string, attachmentFieldIdOrName string, data Attachment) (*FieldAttachments, error) {
+func (t *Table) UploadAttachment(recordID string, attachmentFieldIdOrName string, data Attachment) (*FieldAttachments, error) {
+	return t.UploadAttachmentContext(context.Background(), recordID, attachmentFieldIdOrName, data)
+}
+func (t *Table) UploadAttachmentContext(ctx context.Context, recordID string, attachmentFieldIdOrName string, data Attachment) (*FieldAttachments, error) {
 	result := new(FieldAttachments)
 
 	err := t.client.postAttachment(ctx, t.dbName, recordID, attachmentFieldIdOrName, data, result)
