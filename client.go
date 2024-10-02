@@ -19,7 +19,7 @@ import (
 
 const (
 	airtableBaseURL                 = "https://api.airtable.com/v0"
-	airtableUploadAttachmentBaseURL = "https://content.airtable.com/v0/"
+	airtableUploadAttachmentBaseURL = "https://content.airtable.com/v0"
 	rateLimit                       = 4
 )
 
