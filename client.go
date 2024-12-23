@@ -19,16 +19,18 @@ import (
 )
 
 const (
-	airtableBaseURL = "https://api.airtable.com/v0"
-	rateLimit       = 4
+	airtableBaseURL                 = "https://api.airtable.com/v0"
+	airtableUploadAttachmentBaseURL = "https://content.airtable.com/v0"
+	rateLimit                       = 4
 )
 
 // Client client for airtable api.
 type Client struct {
-	client      *http.Client
+	client                  *http.Client
 	rateLimiter *rate.Limiter
-	baseURL     string
-	apiKey      string
+	baseURL                 string
+	uploadAttachmentBaseURL string
+	apiKey                  string
 }
 
 // NewClient airtable client constructor
@@ -36,10 +38,11 @@ type Client struct {
 // https://airtable.com/account
 func NewClient(apiKey string) *Client {
 	return &Client{
-		client:      http.DefaultClient,
+		client:                  http.DefaultClient,
 		rateLimiter: rate.NewLimiter(rate.Limit(rateLimit), 1),
-		apiKey:      apiKey,
-		baseURL:     airtableBaseURL,
+		apiKey:                  apiKey,
+		baseURL:                 airtableBaseURL,
+		uploadAttachmentBaseURL: airtableUploadAttachmentBaseURL,
 	}
 }
 
@@ -114,6 +117,27 @@ func (at *Client) post(ctx context.Context, db, table string, data, response any
 	}
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
+
+	body, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("cannot marshal body: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(body))
+	if err != nil {
+		return fmt.Errorf("cannot create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", at.apiKey))
+
+	return at.do(req, response)
+}
+
+func (at *Client) postAttachment(ctx context.Context, db, recordID string, attachmentFieldIdOrName string, data Attachment, response any) error {
+	at.rateLimit()
+
+	url := fmt.Sprintf("%s/%s/%s/%s/uploadAttachment", at.uploadAttachmentBaseURL, db, recordID, attachmentFieldIdOrName)
 
 	body, err := json.Marshal(data)
 	if err != nil {
