@@ -12,7 +12,7 @@ import (
 )
 
 func TestRecord_GetRecord(t *testing.T) {
-	table := testTable(t)
+	table := testTable()
 	table.client.baseURL = mockResponse("get_record.json").URL
 	record, err := table.GetRecord("recnTq6CsvFM6vX2m")
 	if err != nil {
@@ -81,7 +81,7 @@ func TestRecord_UpdateRecordPartial(t *testing.T) {
 }
 
 func testRecord(t *testing.T) *Record {
-	table := testTable(t)
+	table := testTable()
 	table.client.baseURL = mockResponse("get_record.json").URL
 	record, err := table.GetRecord("recordID")
 	if err != nil {

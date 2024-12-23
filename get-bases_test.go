@@ -5,7 +5,7 @@ import (
 )
 
 func TestGetBases_Do(t *testing.T) {
-	client := testClient(t)
+	client := testClient()
 	bases := client.GetBases()
 	bases.client.baseURL = mockResponse("get_bases.json").URL
 

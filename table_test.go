@@ -11,7 +11,7 @@ import (
 )
 
 func TestTable_DeleteRecords(t *testing.T) {
-	table := testTable(t)
+	table := testTable()
 	table.client.baseURL = mockResponse("delete_records.json").URL
 	records, err := table.DeleteRecords([]string{"recnTq6CsvFM6vX2m", "recr3qAQbM7juKa4o"})
 	if err != nil {
@@ -31,7 +31,7 @@ func TestTable_DeleteRecords(t *testing.T) {
 }
 
 func TestTable_AddRecords(t *testing.T) {
-	table := testTable(t)
+	table := testTable()
 	table.client.baseURL = mockResponse("get_records_with_filter.json").URL
 	toSend := new(Records)
 	records, err := table.AddRecords(toSend)
@@ -50,7 +50,7 @@ func TestTable_AddRecords(t *testing.T) {
 }
 
 func TestTable_UpdateRecords(t *testing.T) {
-	table := testTable(t)
+	table := testTable()
 	table.client.baseURL = mockResponse("get_records_with_filter.json").URL
 	toSend := new(Records)
 	records, err := table.UpdateRecords(toSend)
@@ -69,7 +69,7 @@ func TestTable_UpdateRecords(t *testing.T) {
 }
 
 func TestTable_UpdateRecordsPartial(t *testing.T) {
-	table := testTable(t)
+	table := testTable()
 	table.client.baseURL = mockResponse("get_records_with_filter.json").URL
 	toSend := new(Records)
 	records, err := table.UpdateRecordsPartial(toSend)
@@ -87,7 +87,7 @@ func TestTable_UpdateRecordsPartial(t *testing.T) {
 	}
 }
 
-func testTable(t *testing.T) *Table {
-	client := testClient(t)
+func testTable() *Table {
+	client := testClient()
 	return client.GetTable("dbName", "tableName")
 }

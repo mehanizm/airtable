@@ -5,7 +5,7 @@ import (
 )
 
 func TestGetBases(t *testing.T) {
-	client := testClient(t)
+	client := testClient()
 	baseschema := client.GetBaseSchema("test")
 	baseschema.client.baseURL = mockResponse("base_schema.json").URL
 

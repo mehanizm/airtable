@@ -13,14 +13,14 @@ import (
 	"testing"
 )
 
-func testClient(t *testing.T) *Client {
+func testClient() *Client {
 	c := NewClient("apiKey")
 	c.SetRateLimit(1000)
 	return c
 }
 
 func TestClient_do(t *testing.T) {
-	c := testClient(t)
+	c := testClient()
 	url := mockErrorResponse(404).URL
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -63,12 +63,11 @@ func TestClient_SetBaseURL(t *testing.T) {
 		},
 	}
 
-	c := testClient(t)
+	c := testClient()
 
 	for _, testCase := range testCases {
 		t.Run(testCase.description, func(t *testing.T) {
 			err := c.SetBaseURL(testCase.url)
-
 			if err != nil {
 				if testCase.expectedError != "" {
 					if !strings.Contains(err.Error(), testCase.expectedError) {
