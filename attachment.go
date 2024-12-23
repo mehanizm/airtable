@@ -34,6 +34,7 @@ type FieldAttachmentDetails struct {
 func (t *Table) UploadAttachment(recordID string, attachmentFieldIdOrName string, data Attachment) (*FieldAttachments, error) {
 	return t.UploadAttachmentContext(context.Background(), recordID, attachmentFieldIdOrName, data)
 }
+
 func (t *Table) UploadAttachmentContext(ctx context.Context, recordID string, attachmentFieldIdOrName string, data Attachment) (*FieldAttachments, error) {
 	result := new(FieldAttachments)
 

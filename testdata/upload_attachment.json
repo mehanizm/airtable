@@ -1,0 +1,15 @@
+{
+	"id": "recnTq6CsvFM6vX2m",
+	"createdTime": "2020-04-10T11:30:57.000Z",
+	"fields": {
+		"Attachments": [
+			{
+				"id": "att1",
+				"url": "https://example.com/test.png",
+				"filename": "test.png",
+				"size": 12345,
+				"type": "image/png"
+			}
+		]
+	}
+}

@@ -27,7 +27,7 @@ const (
 // Client client for airtable api.
 type Client struct {
 	client                  *http.Client
-	rateLimiter *rate.Limiter
+	rateLimiter             *rate.Limiter
 	baseURL                 string
 	uploadAttachmentBaseURL string
 	apiKey                  string
@@ -39,7 +39,7 @@ type Client struct {
 func NewClient(apiKey string) *Client {
 	return &Client{
 		client:                  http.DefaultClient,
-		rateLimiter: rate.NewLimiter(rate.Limit(rateLimit), 1),
+		rateLimiter:             rate.NewLimiter(rate.Limit(rateLimit), 1),
 		apiKey:                  apiKey,
 		baseURL:                 airtableBaseURL,
 		uploadAttachmentBaseURL: airtableUploadAttachmentBaseURL,
@@ -135,7 +135,10 @@ func (at *Client) post(ctx context.Context, db, table string, data, response any
 }
 
 func (at *Client) postAttachment(ctx context.Context, db, recordID string, attachmentFieldIdOrName string, data Attachment, response any) error {
-	at.rateLimit()
+	err := at.rateLimit(ctx)
+	if err != nil {
+		return err
+	}
 
 	url := fmt.Sprintf("%s/%s/%s/%s/uploadAttachment", at.uploadAttachmentBaseURL, db, recordID, attachmentFieldIdOrName)
 
