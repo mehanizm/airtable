@@ -1,6 +1,7 @@
 package airtable
 
 import (
+	"context"
 	"net/url"
 )
 
@@ -34,4 +35,9 @@ func (gbc *GetBasesConfig) WithOffset(offset string) *GetBasesConfig {
 // Do send the prepared get records request.
 func (gbc *GetBasesConfig) Do() (*Bases, error) {
 	return gbc.client.GetBasesWithParams(gbc.params)
+}
+
+// DoContext send the prepared get records request with context.
+func (gbc *GetBasesConfig) DoContext(ctx context.Context) (*Bases, error) {
+	return gbc.client.GetBasesWithParamsContext(ctx, gbc.params)
 }

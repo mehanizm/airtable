@@ -14,7 +14,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
+
+	"golang.org/x/time/rate"
 )
 
 const (
@@ -26,7 +27,7 @@ const (
 // Client client for airtable api.
 type Client struct {
 	client                  *http.Client
-	rateLimiter             <-chan time.Time
+	rateLimiter *rate.Limiter
 	baseURL                 string
 	uploadAttachmentBaseURL string
 	apiKey                  string
@@ -38,7 +39,7 @@ type Client struct {
 func NewClient(apiKey string) *Client {
 	return &Client{
 		client:                  http.DefaultClient,
-		rateLimiter:             time.Tick(time.Second / time.Duration(rateLimit)),
+		rateLimiter: rate.NewLimiter(rate.Limit(rateLimit), 1),
 		apiKey:                  apiKey,
 		baseURL:                 airtableBaseURL,
 		uploadAttachmentBaseURL: airtableUploadAttachmentBaseURL,
@@ -54,7 +55,7 @@ func (at *Client) SetCustomClient(client *http.Client) {
 // Airtable limit is 5 requests per second (we use 4)
 // https://airtable.com/{yourDatabaseID}/api/docs#curl/ratelimits
 func (at *Client) SetRateLimit(customRateLimit int) {
-	at.rateLimiter = time.Tick(time.Second / time.Duration(customRateLimit))
+	at.rateLimiter = rate.NewLimiter(rate.Limit(customRateLimit), 1)
 }
 
 func (at *Client) SetBaseURL(baseURL string) error {
@@ -76,12 +77,15 @@ func (at *Client) SetBaseURL(baseURL string) error {
 	return nil
 }
 
-func (at *Client) rateLimit() {
-	<-at.rateLimiter
+func (at *Client) rateLimit(ctx context.Context) error {
+	return at.rateLimiter.Wait(ctx)
 }
 
 func (at *Client) get(ctx context.Context, db, table, recordID string, params url.Values, target any) error {
-	at.rateLimit()
+	err := at.rateLimit(ctx)
+	if err != nil {
+		return err
+	}
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 	if recordID != "" {
@@ -107,7 +111,10 @@ func (at *Client) get(ctx context.Context, db, table, recordID string, params ur
 }
 
 func (at *Client) post(ctx context.Context, db, table string, data, response any) error {
-	at.rateLimit()
+	err := at.rateLimit(ctx)
+	if err != nil {
+		return err
+	}
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 
@@ -149,7 +156,10 @@ func (at *Client) postAttachment(ctx context.Context, db, recordID string, attac
 }
 
 func (at *Client) delete(ctx context.Context, db, table string, recordIDs []string, target any) error {
-	at.rateLimit()
+	err := at.rateLimit(ctx)
+	if err != nil {
+		return err
+	}
 
 	rawURL := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 	params := url.Values{}
@@ -177,7 +187,10 @@ func (at *Client) delete(ctx context.Context, db, table string, recordIDs []stri
 }
 
 func (at *Client) patch(ctx context.Context, db, table, data, response any) error {
-	at.rateLimit()
+	err := at.rateLimit(ctx)
+	if err != nil {
+		return err
+	}
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 
@@ -198,7 +211,10 @@ func (at *Client) patch(ctx context.Context, db, table, data, response any) erro
 }
 
 func (at *Client) put(ctx context.Context, db, table, data, response any) error {
-	at.rateLimit()
+	err := at.rateLimit(ctx)
+	if err != nil {
+		return err
+	}
 
 	url := fmt.Sprintf("%s/%s/%s", at.baseURL, db, table)
 

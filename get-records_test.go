@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetRecordsConfig_Do(t *testing.T) {
-	table := testTable(t)
+	table := testTable()
 	table.client.baseURL = mockResponse("get_records_with_filter.json").URL
 	sortQuery1 := struct {
 		FieldName string
