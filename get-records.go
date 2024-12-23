@@ -6,6 +6,7 @@
 package airtable
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -44,7 +45,8 @@ func (grc *GetRecordsConfig) WithFilterFormula(filterFormula string) *GetRecords
 func (grc *GetRecordsConfig) WithSort(sortQueries ...struct {
 	FieldName string
 	Direction string
-}) *GetRecordsConfig {
+},
+) *GetRecordsConfig {
 	for queryNum, sortQuery := range sortQueries {
 		grc.params.Set(fmt.Sprintf("sort[%v][field]", queryNum), sortQuery.FieldName)
 		grc.params.Set(fmt.Sprintf("sort[%v][direction]", queryNum), sortQuery.Direction)
@@ -104,4 +106,9 @@ func (grc *GetRecordsConfig) InStringFormat(timeZone, userLocale string) *GetRec
 // Do send the prepared get records request.
 func (grc *GetRecordsConfig) Do() (*Records, error) {
 	return grc.table.GetRecordsWithParams(grc.params)
+}
+
+// DoContext send the prepared get records request with context.
+func (grc *GetRecordsConfig) DoContext(ctx context.Context) (*Records, error) {
+	return grc.table.GetRecordsWithParamsContext(ctx, grc.params)
 }
