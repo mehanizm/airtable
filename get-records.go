@@ -133,12 +133,8 @@ func (grc *GetRecordsConfig) DoContext(ctx context.Context) (*Records, error) {
 }
 
 func (grc *GetRecordsConfig) IterAllRecords(ctx context.Context) iter.Seq2[*Record, error] {
-	var offset string
 	return func(yield func(*Record, error) bool) {
 		for {
-			if offset != "" {
-				grc.WithOffset(offset)
-			}
 			records, err := grc.DoContext(ctx)
 			if err != nil {
 				yield(nil, err)
@@ -149,6 +145,9 @@ func (grc *GetRecordsConfig) IterAllRecords(ctx context.Context) iter.Seq2[*Reco
 					return
 				}
 			}
+			if len(records.Records) < grc.getPageSize() || records.Offset == "" {
+				return
+			}
 			if grc.maxRecords != nil {
 				recordsLeftToLoad := *grc.maxRecords - len(records.Records)
 				if recordsLeftToLoad <= 0 {
@@ -157,10 +156,7 @@ func (grc *GetRecordsConfig) IterAllRecords(ctx context.Context) iter.Seq2[*Reco
 				grc.maxRecords = &recordsLeftToLoad
 				grc.MaxRecords(*grc.maxRecords)
 			}
-			offset = records.Offset
-			if len(records.Records) < grc.getPageSize() || offset == "" {
-				return
-			}
+			grc.WithOffset(records.Offset)
 		}
 	}
 }
