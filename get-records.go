@@ -8,6 +8,7 @@ package airtable
 import (
 	"context"
 	"fmt"
+	"iter"
 	"net/url"
 	"strconv"
 )
@@ -17,6 +18,9 @@ import (
 type GetRecordsConfig struct {
 	table  *Table
 	params url.Values
+
+	customPageSize *int
+	maxRecords     *int
 }
 
 // GetRecords prepare step to get records.
@@ -66,6 +70,7 @@ func (grc *GetRecordsConfig) FromView(viewNameOrID string) *GetRecordsConfig {
 // See the Pagination section below for more.
 func (grc *GetRecordsConfig) MaxRecords(maxRecords int) *GetRecordsConfig {
 	grc.params.Set("maxRecords", strconv.Itoa(maxRecords))
+	grc.maxRecords = &maxRecords
 	return grc
 }
 
@@ -74,7 +79,15 @@ func (grc *GetRecordsConfig) MaxRecords(maxRecords int) *GetRecordsConfig {
 // See the Pagination section below for more.
 func (grc *GetRecordsConfig) PageSize(pageSize int) *GetRecordsConfig {
 	grc.params.Set("pageSize", strconv.Itoa(pageSize))
+	grc.customPageSize = &pageSize
 	return grc
+}
+
+func (grc *GetRecordsConfig) getPageSize() int {
+	if grc.customPageSize != nil {
+		return *grc.customPageSize
+	}
+	return 100 // default page size
 }
 
 // Pagination
@@ -117,4 +130,33 @@ func (grc *GetRecordsConfig) Do() (*Records, error) {
 // DoContext send the prepared get records request with context.
 func (grc *GetRecordsConfig) DoContext(ctx context.Context) (*Records, error) {
 	return grc.table.GetRecordsWithParamsContext(ctx, grc.params)
+}
+
+func (grc *GetRecordsConfig) IterAllRecords(ctx context.Context) iter.Seq2[*Record, error] {
+	return func(yield func(*Record, error) bool) {
+		for {
+			records, err := grc.DoContext(ctx)
+			if err != nil {
+				yield(nil, err)
+				return
+			}
+			for _, rec := range records.Records {
+				if !yield(rec, nil) {
+					return
+				}
+			}
+			if len(records.Records) < grc.getPageSize() || records.Offset == "" {
+				return
+			}
+			if grc.maxRecords != nil {
+				recordsLeftToLoad := *grc.maxRecords - len(records.Records)
+				if recordsLeftToLoad <= 0 {
+					return
+				}
+				grc.maxRecords = &recordsLeftToLoad
+				grc.MaxRecords(*grc.maxRecords)
+			}
+			grc.WithOffset(records.Offset)
+		}
+	}
 }

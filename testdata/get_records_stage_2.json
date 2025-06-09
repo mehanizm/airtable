@@ -1,0 +1,32 @@
+{
+    "records": [
+        {
+            "id": "recnFR6CsvFM6vX2m",
+            "fields": {
+                "Field1": "Field1",
+                "Field2": true,
+                "Field3": "2020-04-06T06:00:00.000Z"
+            },
+            "createdTime": "2020-04-10T11:30:57.000Z"
+        },
+        {
+            "id": "recrLdAQbM7juKa4o",
+            "fields": {
+                "Field1": "Field1",
+                "Field2": true,
+                "Field3": "2020-04-06T06:00:00.000Z"
+            },
+            "createdTime": "2020-04-10T11:30:49.000Z"
+        },
+        {
+            "id": "recr64AQbM7juKa4a",
+            "fields": {
+                "Field1": "Field1",
+                "Field2": false,
+                "Field3": "2020-04-06T06:00:00.000Z"
+            },
+            "createdTime": "2020-04-10T11:30:49.000Z"
+        }
+    ],
+    "offset": ""
+}
