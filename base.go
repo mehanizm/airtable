@@ -19,11 +19,11 @@ type Bases struct {
 }
 
 type Field struct {
-	ID          string         `json:"id"`
+	ID          string         `json:"id,omitempty"`
 	Type        string         `json:"type"`
 	Name        string         `json:"name"`
 	Description string         `json:"description"`
-	Options     map[string]any `json:"options"`
+	Options     map[string]any `json:"options,omitempty"`
 }
 
 type View struct {
@@ -33,12 +33,12 @@ type View struct {
 }
 
 type TableSchema struct {
-	ID             string   `json:"id"`
-	PrimaryFieldID string   `json:"primaryFieldId"`
+	ID             string   `json:"id,omitempty"`
+	PrimaryFieldID string   `json:"primaryFieldId,omitempty"`
 	Name           string   `json:"name"`
 	Description    string   `json:"description"`
 	Fields         []*Field `json:"fields"`
-	Views          []*View  `json:"views"`
+	Views          []*View  `json:"views,omitempty"`
 }
 
 type Tables struct {
@@ -105,4 +105,34 @@ func (b *BaseConfig) GetTablesContext(ctx context.Context) (*Tables, error) {
 	}
 
 	return tables, nil
+}
+
+type CreateBaseRequest struct {
+	Name      string         `json:"name"`
+	Workspace string         `json:"workspaceId"`
+	Tables    []*TableSchema `json:"tables"`
+}
+
+type CreateBaseResponse struct {
+	BaseID string         `json:"id"` // id of created base
+	Tables []*TableSchema `json:"tables"`
+}
+
+// CreateBases create base from table schemas
+// https://airtable.com/developers/web/api/create-base
+func (at *Client) CreateBase(req *CreateBaseRequest) (*CreateBaseResponse, error) {
+	return at.CreateBaseContext(context.Background(), req)
+}
+
+// CreateBasesContext create base from table schema with context
+// https://airtable.com/developers/web/api/create-base
+func (at *Client) CreateBaseContext(ctx context.Context, req *CreateBaseRequest) (*CreateBaseResponse, error) {
+	resp := new(CreateBaseResponse)
+
+	err := at.post(ctx, "meta", "bases", req, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
