@@ -2,9 +2,7 @@ package airtable
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
-	"os"
 )
 
 // Base type of airtable base.
@@ -130,10 +128,6 @@ func (at *Client) CreateBase(req *CreateBaseRequest) (*CreateBaseResponse, error
 // https://airtable.com/developers/web/api/create-base
 func (at *Client) CreateBaseContext(ctx context.Context, req *CreateBaseRequest) (*CreateBaseResponse, error) {
 	resp := new(CreateBaseResponse)
-
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	enc.Encode(req)
 
 	err := at.post(ctx, "meta", "bases", req, resp)
 	if err != nil {
