@@ -40,6 +40,8 @@ func makeHTTPClientError(url string, resp *http.Response) error {
 		respStatusText = "Too Large The request exceeded the maximum allowed payload size. You shouldn't encounter this under normal use."
 	case 422:
 		respStatusText = "The request data is invalid. This includes most of the base-specific validations. You will receive a detailed error message and code pointing to the exact issue."
+	case 429:
+		respStatusText = "Request rate limit reached. You should retry the request with backoffs."
 	case 500:
 		respStatusText = "Error The server encountered an unexpected condition."
 	case 502:
